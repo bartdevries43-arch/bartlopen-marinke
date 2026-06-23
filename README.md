@@ -1,11 +1,16 @@
-# Op naar 21,1K — bartlopen Run Coach
+# Op naar 21,1K — bartlopen Run Coach 🏃‍♀️🏅
 
-Persoonlijk halve-marathonschema voor **Marinke** (richttijd ±2:15), met coaching
-van Coach Bart (@bartlopen), Strava-achtige stats, badges en voortgang die lokaal
-op je apparaat bewaard blijft.
+**Hé Marinke!** Welkom bij je weg naar je allereerste halve marathon. Geen stress
+om de tijd — uitlopen staat voorop, met ±2:15 als mooie richttijd. 16 weken,
+3 trainingen per week (maandag · donderdag · zaterdag), rustig opgebouwd van
+10 naar 20 km. Vink je trainingen af, vul je tijden in en zie je stats en badges
+groeien. Je voortgang blijft gewoon op je telefoon staan.
 
-16 weken · 3 trainingen per week (maandag · donderdag · zaterdag).
+➡️ **Open de app:** https://bartdevries43-arch.github.io/bartlopen-marinke/
 
-Werkt als web-app op je telefoon — zet 'm op je beginscherm voor een app-gevoel.
+> Tip: open 'm op je telefoon → *Delen* → *Zet op beginscherm*. Dan heb je 'm als
+> echte app, ook offline.
 
-Zet 'm op, strijder! 🏃‍♀️
+Rustig sterk, kilometer voor kilometer. **Zet 'm op, strijder!**
+
+— Coaching door Coach Bart · [@bartlopen](https://www.tiktok.com/@bartlopen)
