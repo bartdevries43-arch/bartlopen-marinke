@@ -1,5 +1,5 @@
 /* Eenvoudige offline-cache voor Run Coach. Verhoog CACHE bij elke update. */
-const CACHE = "runcoach-marinke-v1-fix2";
+const CACHE = "runcoach-marinke-v2-week2";
 const ASSETS = [
   "./",
   "./index.html",
