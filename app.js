@@ -48,38 +48,67 @@ const COACH = {
     "Geen haast — juist deze kalme kilometers maken je sterker.",
     "Lekker ontspannen lopen. Geniet er gewoon van, strijder.",
     "Rustig is precies goed: zo blijf je fit en blessurevrij.",
+    "Praten moet makkelijk kunnen. Houd 'm zacht, strijder.",
+    "Niets forceren vandaag. Stap voor stap bouw je het op.",
+    "Soepele benen, rustige adem. Mooi onderweg, strijder.",
+    "Deze rustige meters tellen net zo hard. Vertrouw erop.",
   ],
   lang: [
     "De lange duurloop, strijder. Rustig beginnen, sterk eindigen.",
     "Tijd op de benen betaalt zich later uit. Jij kunt dit, strijder.",
     "Verdeel je krachten en geniet van de afstand.",
     "Elke kilometer telt vandaag. Mooi onderweg, strijder.",
+    "Bewust rustiger dan je voelt — dat is precies goed.",
+    "Geduld is je kracht vandaag, strijder. Lekker doorkabbelen.",
+    "Drinken en happen oefenen mag. Rustig en constant.",
+    "Dit is de basis onder je halve, strijder. Stap voor stap.",
   ],
   tempo: [
-    "Tempotraining, strijder: stevig, maar netjes onder controle.",
+    "Tempoblok, strijder: stevig, maar netjes onder controle.",
     "Zoek een gelijkmatig, vlot ritme. Hier word je sneller van.",
     "Net buiten je comfortzone — daar zit je winst, strijder.",
     "Beheerst doorzetten. Je tilt je niveau rustig omhoog.",
+    "Korte zinnen moeten nog lukken. Mooi gedoseerd, strijder.",
+    "Niet jagen tot je verzuurt — vlot en in balans.",
+    "Voel je sterker worden, strijder. Houd 'm beheerst.",
   ],
   interval: [
     "Korte inspanningen, strijder, goed herstellen ertussen.",
     "Houd elke herhaling gelijk en soepel; let op je techniek.",
     "Even pittig, dan rust. Jij houdt de regie, strijder.",
     "Scherp en gecontroleerd. Hier komt je snelheid vandaan.",
+    "Lichte voeten, rustige adem tussendoor. Mooi, strijder.",
+    "Geen sprint najagen — vlot en ontspannen blijft het.",
+    "Elke herhaling hetzelfde. Beheerst en netjes, strijder.",
   ],
   doel: [
-    "Halve-marathontempo, strijder. Onthoud hoe dit voelt voor je race.",
+    "Halve-marathontempo, strijder. Onthoud hoe dit voelt.",
     "Dit is je wedstrijdritme. Vertrouw op je benen, strijder.",
     "Beheerst op tempo blijven — precies waar je het voor doet.",
     "Voel je HM-tempo, strijder. Je bouwt er rustig naartoe.",
+    "Niet sneller dan dit. Rustig vertrouwen, strijder.",
+    "Dit ritme ga je terugzien op de startlijn. Prent het in.",
+    "Gecontroleerd op koers, strijder. Mooi in balans.",
   ],
   herstel: [
     "Hersteldag, strijder. Rustig aan, daar word je juist beter van.",
     "Vandaag laad je op. Herstel hoort net zo goed bij trainen.",
     "Houd het licht en kalm; morgen sta je er sterker.",
     "Slim dat je rust neemt, strijder. Zo train je verstandig.",
+    "Niets bewijzen vandaag. Lekker losjes.",
+    "Rust is waar je groeit, strijder. Geniet ervan.",
+    "Kalme benen, hoofd leeg. Precies goed.",
   ],
 };
+
+const DONE = [
+  "💪 Sterk gedaan, strijder!",
+  "✅ Weer een stap dichterbij, strijder!",
+  "🙌 Mooi volgehouden, strijder!",
+  "🌟 Knap werk, strijder!",
+  "🏃‍♀️ Lekker bezig, strijder!",
+  "💚 Rustig sterk, strijder!",
+];
 const coachLine = (zone) => {
   const arr = COACH[zone] || COACH.duur;
   return arr[Math.floor(Math.random() * arr.length)];
@@ -244,6 +273,15 @@ let log = loadLog();
 const sid = (week, day) => `w${week}-${day}`;
 const flatSessions = PLAN.flatMap((w) => w.sessions.map((s) => ({ ...s, week: w.week })));
 const totalSessions = flatSessions.length;
+
+function autoTime(raw) {
+  const digits = String(raw).replace(/\D/g, "").slice(0, 6);
+  if (digits.length <= 2) return digits;
+  const parts = []; let s = digits;
+  while (s.length > 2) { parts.unshift(s.slice(-2)); s = s.slice(0, -2); }
+  parts.unshift(s);
+  return parts.join(":");
+}
 
 function parseTime(str) {
   if (!str) return null;
@@ -537,7 +575,7 @@ function openDetail(week, day) {
 
   const recalc = () => ($("fPace").textContent = fmtPace(paceSeconds($("fDistance").value, $("fTime").value)) || "—");
   $("fDistance").addEventListener("input", recalc);
-  $("fTime").addEventListener("input", recalc);
+  $("fTime").addEventListener("input", () => { $("fTime").value = autoTime($("fTime").value); recalc(); });
 
   const collect = () => ({
     ...log[id],
@@ -557,7 +595,7 @@ function openDetail(week, day) {
     const cur = collect();
     cur.done = !cur.done;
     log[id] = cur; saveLog();
-    if (cur.done) { celebrate(); toast(s.race ? "🏅 Finisher! Wat een prestatie, strijder!" : "💪 Sterk gedaan, strijder!"); }
+    if (cur.done) { celebrate(); toast(s.race ? "🏅 Finisher! Wat een prestatie, strijder!" : DONE[Math.floor(Math.random() * DONE.length)]); }
     closeDetail();
   });
 
