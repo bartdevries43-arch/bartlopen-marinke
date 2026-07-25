@@ -32,7 +32,7 @@ const STORE_KEY = CONFIG.storeKey;
 const UNIT = CONFIG.unit === "min" ? "min" : "km";
 const UNIT_LABEL = UNIT;
 const ZONE_SUFFIX = CONFIG.zonePaceSuffix ?? "/km";
-const TOTAL_WEEKS = 16;
+const TOTAL_WEEKS = 15;
 const COACH_INITIAL = (CONFIG.coachName.replace(/^coach\s+/i, "")[0] || "C").toUpperCase();
 
 /* --- Tempozones (afgestemd op Marinke) ----------------------------- */
@@ -217,15 +217,11 @@ const PLAN = [
     don({ zone: "interval", km: 10, title: "5×1 km interval", goal: "Laatste snelheid", blocks: ["1,5 km inlopen", "5×1 km @ 6:00–6:10/km", "90 sec rust ertussen", "1 km uitlopen"] }),
     za({ zone: "lang", km: 20, title: "20 km rustig",     goal: "Piekduurloop, niet racen!", blocks: ["20 km op 6:55–7:30/km", "Bewust rustig, dit is geen wedstrijd"] }),
   ]},
-  { week: 15, dates: "14–20 sep", phase: "Fase 4 · Piek, taper & race", taper: true, sessions: [
-    ma({ zone: "duur", km: 7,  title: "7 km rustig",   goal: "Taper start", blocks: ["7 km op 6:45–7:15/km"] }),
-    don({ zone: "tempo", km: 8, title: "3×1 km tempo", goal: "Scherp & fris", blocks: ["1,5 km inlopen", "3×1 km @ 6:20–6:30/km", "2 min rust ertussen", "1 km uitlopen"] }),
-    za({ zone: "lang", km: 16, title: "16 km soepel",  goal: "Korter, soepel, vertrouwen", blocks: ["16 km op 6:55–7:30/km"] }),
-  ]},
-  { week: 16, dates: "21–27 sep", phase: "Fase 4 · Piek, taper & race", taper: true, race: true, sessions: [
-    ma({ zone: "duur", km: 6, title: "6 km rustig",     goal: "Benen los", blocks: ["6 km op 6:50–7:15/km"] }),
-    don({ zone: "duur", km: 5, title: "5 km + 4×100 m", goal: "Alles licht en kort", kind: "Soepel", blocks: ["5 km rustig", "4×100 m soepel", "Niets zwaars meer"] }),
-    za({ zone: "doel", km: 21.1, title: "🏁 Halve marathon", goal: "Doelrace · richttijd 2:15", kind: "Doelrace", blocks: ["Eerste 5 km rustig op 6:35–6:45/km", "Daarna richting 6:25–6:35/km als benen & hartslag rustig blijven", "Laatste 5 km op gevoel", "Gel rond 40, 80 en eventueel 115 min", "(of 3–4 km loslopen als de race op zondag is)"] }),
+  { week: 15, dates: "14–20 sep", phase: "Fase 4 · Taper & racedag", taper: true, race: true, sessions: [
+    ma({ zone: "duur", km: 7, title: "7 km rustig", goal: "Taper: benen los houden", blocks: ["7 km op 6:45–7:15/km", "Niets zwaars meer deze week"] }),
+    don({ zone: "tempo", km: 6, title: "3×1 km kort & scherp", goal: "Scherp en fris blijven", kind: "Soepel", blocks: ["1,5 km inlopen + 3 versnellingen", "3×1 km @ 6:20–6:30/km", "2 min rust ertussen", "1 km uitlopen"] }),
+    za({ zone: "duur", km: 4, title: "4 km loslopen", goal: "Dag vóór de race", kind: "Soepel", blocks: ["4 km heel rustig", "3×100 m korte versnellingen", "Vroeg naar bed en goed eten"] }),
+    zo({ zone: "doel", km: 21.1, title: "🏁 Halve marathon", goal: "Doelrace · zondag 20 sep · richttijd 2:15", kind: "Doelrace", blocks: ["Eerste 5 km rustig op 6:35–6:45/km", "Daarna richting 6:25–6:35/km als benen & hartslag rustig blijven", "Laatste 5 km op gevoel", "Gel rond 40, 80 en eventueel 115 min", "Geniet ervan, dit is jouw dag! 🎉"] }),
   ]},
 ];
 
@@ -418,7 +414,7 @@ function renderHero(stats) {
 }
 
 function raceInfo() {
-  const rw = PLAN.find((w) => w.race || w.tuneup || w.finish) || PLAN[PLAN.length - 1];
+  const rw = PLAN.find((w) => w.race || w.finish) || PLAN.find((w) => w.tuneup) || PLAN[PLAN.length - 1];
   const rs = rw.sessions[rw.sessions.length - 1];
   const off = DAY_OFFSET[rs.day] ?? 6;
   const date = new Date(schedStartMs() + ((rw.week - 1) * 7 + off) * 864e5);
