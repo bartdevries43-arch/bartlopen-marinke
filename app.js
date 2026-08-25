@@ -151,7 +151,7 @@ const PLAN = [
     don({ zone: "tempo", km: 7, title: "3×1 km tempo",  goal: "Controle op tempo", blocks: ["1,5 km inlopen + 3 versnellingen", "3×1 km @ 6:20–6:30/km", "2×2 min rustig tussen de blokken", "1 km uitlopen"] }),
     za({ zone: "lang", km: 11, title: "11 km rustig", goal: "Duur opbouwen", blocks: ["11 km op 6:55–7:25/km"] }),
   ]},
-  { week: 3, dates: "22–28 jun", phase: "Fase 1 · Ritme & belastbaarheid", sessions: [
+  { week: 3, dates: "22–28 jun", phase: "Fase 1 · Ritme & belastbaarheid", tuneup: true, tuneupTag: "Kuip Run", raceLabel: "🏁 Kuip Run", sessions: [
     ma({ zone: "duur",     km: 7,  title: "7 km rustig",      goal: "Meer volume", blocks: ["7 km op 6:45–7:15/km"] }),
     don({ zone: "interval", km: 7, title: "6×400 m interval", goal: "Beentjes wakker maken", blocks: ["1,5 km inlopen + 3 versnellingen", "6×400 m @ 5:55–6:05/km", "400 m dribbel/wandel ertussen", "1 km uitlopen"] }),
     zo({ zone: "doel", km: 10, title: "🏁 10 km Kuip Run · Rotterdam", goal: "Tune-up wedstrijd in De Kuip", kind: "Wedstrijd", tuneup: true, blocks: ["10 km wedstrijd in Rotterdam", "Gecontroleerd lopen, genieten van de sfeer", "Telt als je lange duurloop deze week"] }),
@@ -212,10 +212,10 @@ const PLAN = [
     don({ zone: "tempo", km: 10, title: "3×2 km tempo", goal: "Tempoblokken", blocks: ["1,5 km inlopen", "3×2 km @ 6:10–6:20/km", "2×3 min rustig tussen de blokken", "1 km uitlopen"] }),
     za({ zone: "lang", km: 18, title: "18 km rustig",  goal: "Lange duur", blocks: ["18 km op 6:55–7:30/km", "Laatste 3 km max 6:35/km als je fris bent"] }),
   ]},
-  { week: 14, dates: "7–13 sep", phase: "Fase 4 · Piek, taper & race", sessions: [
-    ma({ zone: "duur", km: 9,  title: "9 km rustig",      goal: "Volume", blocks: ["9 km in Z2"] }),
-    don({ zone: "interval", km: 10, title: "5×1 km interval", goal: "Laatste snelheid", blocks: ["1,5 km inlopen", "5×1 km @ 6:00–6:10/km", "90 sec rust ertussen", "1 km uitlopen"] }),
-    za({ zone: "lang", km: 20, title: "20 km rustig",     goal: "Piekduurloop, niet racen!", blocks: ["20 km op 6:55–7:30/km", "Bewust rustig, dit is geen wedstrijd"] }),
+  { week: 14, dates: "7–13 sep", phase: "Fase 4 · Piek, taper & race", tuneup: true, tuneupTag: "Kuiprun", raceLabel: "🏁 Kuiprun", sessions: [
+    ma({ zone: "duur", km: 9,  title: "9 km rustig", goal: "Volume, maar benen sparen voor zaterdag", blocks: ["9 km in Z2", "Bewust rustig: dit weekend loop je een wedstrijd"] }),
+    don({ zone: "duur", km: 7, title: "7 km met 4 versnellingen", goal: "Scherp blijven zonder moe te worden", kind: "Soepel", blocks: ["1,5 km inlopen", "4×1 min vlot op 6:10–6:20/km, met 2 min rustig joggen ertussen", "1 km uitlopen", "Geen zware intervallen meer: die heb je nu niet meer nodig"] }),
+    za({ zone: "doel", km: 10, title: "🏁 Kuiprun", goal: "Wedstrijd in plaats van je lange duurloop", kind: "Wedstrijd", blocks: ["Warm rustig in: 10 min joggen plus een paar korte versnellingen", "Loop 'm gecontroleerd: dit is 8 dagen vóór je halve marathon", "Richttempo 6:15–6:30/km, iets vlotter dan je racetempo maar niet alles geven", "Voelt het goed? Loop na afloop nog 4 à 5 km rustig uit, dan heb je alsnog een stevige duurloop", "Voelt het zwaar? Gewoon uitlopen en klaar, volgende week telt", "Geniet van de sfeer in De Kuip 🎉"] }),
   ]},
   { week: 15, dates: "14–20 sep", phase: "Fase 4 · Taper & racedag", taper: true, race: true, sessions: [
     ma({ zone: "duur", km: 7, title: "7 km rustig", goal: "Taper: benen los houden", blocks: ["7 km op 6:45–7:15/km", "Niets zwaars meer deze week"] }),
@@ -559,7 +559,7 @@ function renderChart() {
 function tagOf(w) {
   if (w.finish) return `<span class="week-tag tag-race">Finale</span>`;
   if (w.race) return `<span class="week-tag tag-race">Raceweek</span>`;
-  if (w.tuneup) return `<span class="week-tag tag-tuneup">10 km race</span>`;
+  if (w.tuneup) return `<span class="week-tag tag-tuneup">${w.tuneupTag || "Wedstrijd"}</span>`;
   if (w.recovery) return `<span class="week-tag tag-rest">Herstel</span>`;
   if (w.taper) return `<span class="week-tag tag-taper">Taper</span>`;
   return "";
