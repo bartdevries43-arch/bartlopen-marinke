@@ -31,6 +31,7 @@ const START_DATE = CONFIG.startDate;
 const STORE_KEY = CONFIG.storeKey;
 const UNIT = CONFIG.unit === "min" ? "min" : "km";
 const UNIT_LABEL = UNIT;
+const nlNum = (v) => String(v).replace(".", ",");
 const ZONE_SUFFIX = CONFIG.zonePaceSuffix ?? "/km";
 const TOTAL_WEEKS = 15;
 const COACH_INITIAL = (CONFIG.coachName.replace(/^coach\s+/i, "")[0] || "C").toUpperCase();
@@ -40,11 +41,11 @@ const COACH_INITIAL = (CONFIG.coachName.replace(/^coach\s+/i, "")[0] || "C").toU
    zodat alle bestaande kleuren in styles.css blijven werken.            */
 const ZONES = [
   { key: "herstel",  name: "Herstel",          pace: "langzamer dan 7:15", info: "RPE 2-3 · uitlopen" },
-  { key: "duur",     name: "Rustige duur",     pace: "6:45–7:15",          info: "Z2 · RPE 3-4 · praten kan makkelijk" },
-  { key: "lang",     name: "Lange duurloop",   pace: "6:55–7:30",          info: "Z2 · bij warmte nog rustiger" },
-  { key: "doel",     name: "HM-tempo",         pace: "≈ 6:24",             info: "Z3 · RPE 5-6 · gecontroleerd" },
-  { key: "tempo",    name: "Tempoblokken",     pace: "6:05–6:20",          info: "Z3/laag Z4 · RPE 6-7 · stevig" },
-  { key: "interval", name: "Interval",         pace: "5:45–6:05",          info: "Z4 · RPE 7-8 · nooit sprinten" },
+  { key: "duur",     name: "Rustige duur",     pace: "6:45–7:15",          info: "RPE 3-4 · praten kan makkelijk" },
+  { key: "lang",     name: "Lange duurloop",   pace: "6:55–7:30",          info: "RPE 3-4 · bij warmte nog rustiger" },
+  { key: "doel",     name: "HM-tempo",         pace: "≈ 6:24",             info: "RPE 5-6 · gecontroleerd" },
+  { key: "tempo",    name: "Tempoblokken",     pace: "6:05–6:20",          info: "RPE 6-7 · stevig" },
+  { key: "interval", name: "Interval",         pace: "5:45–6:05",          info: "RPE 7-8 · nooit sprinten" },
 ];
 const zoneByKey = Object.fromEntries(ZONES.map((z) => [z.key, z]));
 
@@ -138,114 +139,114 @@ const don = (o) => ({ day: "do", dayLabel: "Donderdag", kind: "Kwaliteit",      
 const za  = (o) => ({ day: "za", dayLabel: "Zaterdag",  kind: "Lange duurloop",   ...o });
 const zo  = (o) => ({ day: "zo", dayLabel: "Zondag",    kind: "Wedstrijd",        ...o });
 
-/* --- Het 16-weken schema (rustig naar een eerste halve marathon) --- */
+/* --- Het 15-weken schema (rustig naar een eerste halve marathon) --- */
 const PLAN = [
   /* ---- Fase 1 · Ritme en belastbaarheid ---- */
-  { week: 1, dates: "8–14 jun", phase: "Fase 1 · Ritme & belastbaarheid", sessions: [
+  { week: 1, dates: "8–14 jun", phase: "Fase 1 · Ritme en belastbaarheid", sessions: [
     ma({ zone: "duur", km: 6,  title: "6 km rustig",       goal: "Basisritme terugvinden", blocks: ["6 km op 6:45–7:15/km", "Ademhaling rustig en onder controle"] }),
-    don({ zone: "duur", km: 6, title: "6 km + 4×100 m",    goal: "Techniek & soepelheid", kind: "Soepel", blocks: ["6 km rustig", "4×100 m soepel versnellen", "Versnellingen ontspannen, niet sprinten"] }),
+    don({ zone: "duur", km: 6, title: "6 km + 4×100 m",    goal: "Techniek en soepelheid", kind: "Soepel", blocks: ["6 km rustig", "4×100 m soepel versnellen", "Versnellingen ontspannen, niet sprinten"] }),
     za({ zone: "lang", km: 10, title: "10 km rustig",      goal: "Vertrouwde duur", blocks: ["10 km op 6:55–7:20/km", "Constant en ontspannen lopen"] }),
   ]},
-  { week: 2, dates: "15–21 jun", phase: "Fase 1 · Ritme & belastbaarheid", sessions: [
-    ma({ zone: "duur",  km: 6, title: "6 km rustig",    goal: "Herstel & volume", blocks: ["6 km in Z2, makkelijk kunnen praten"] }),
-    don({ zone: "tempo", km: 7, title: "3×1 km tempo",  goal: "Controle op tempo", blocks: ["1,5 km inlopen + 3 versnellingen", "3×1 km @ 6:20–6:30/km", "2×2 min rustig tussen de blokken", "1 km uitlopen"] }),
+  { week: 2, dates: "15–21 jun", phase: "Fase 1 · Ritme en belastbaarheid", sessions: [
+    ma({ zone: "duur",  km: 6, title: "6 km rustig",    goal: "Herstel en volume", blocks: ["6 km rustig op 6:45–7:15/km, makkelijk kunnen praten"] }),
+    don({ zone: "tempo", km: 7, title: "3×1 km tempo",  goal: "Controle op tempo", blocks: ["1,5 km inlopen + 3 versnellingen", "3×1 km op 6:20–6:30/km", "2×2 min rustig tussen de blokken", "1 km uitlopen"] }),
     za({ zone: "lang", km: 11, title: "11 km rustig", goal: "Duur opbouwen", blocks: ["11 km op 6:55–7:25/km"] }),
   ]},
-  { week: 3, dates: "22–28 jun", phase: "Fase 1 · Ritme & belastbaarheid", tuneup: true, tuneupTag: "Kuip Run", raceLabel: "🏁 Kuip Run", sessions: [
+  { week: 3, dates: "22–28 jun", phase: "Fase 1 · Ritme en belastbaarheid", sessions: [
     ma({ zone: "duur",     km: 7,  title: "7 km rustig",      goal: "Meer volume", blocks: ["7 km op 6:45–7:15/km"] }),
-    don({ zone: "interval", km: 7, title: "6×400 m interval", goal: "Beentjes wakker maken", blocks: ["1,5 km inlopen + 3 versnellingen", "6×400 m @ 5:55–6:05/km", "400 m dribbel/wandel ertussen", "1 km uitlopen"] }),
-    zo({ zone: "doel", km: 10, title: "🏁 10 km Kuip Run · Rotterdam", goal: "Tune-up wedstrijd in De Kuip", kind: "Wedstrijd", blocks: ["10 km wedstrijd in Rotterdam", "Gecontroleerd lopen, genieten van de sfeer", "Telt als je lange duurloop deze week"] }),
+    don({ zone: "interval", km: 7, title: "6×400 m interval", goal: "Beentjes wakker maken", blocks: ["1,5 km inlopen + 3 versnellingen", "6×400 m op 5:55–6:05/km", "400 m dribbel/wandel ertussen", "1 km uitlopen"] }),
+    zo({ zone: "lang", km: 10, title: "10 km duurloop", goal: "Lange duurloop van deze week", kind: "Lange duurloop", blocks: ["10 km rustig op 6:55–7:30/km", "Oorspronkelijk stond hier de Kuiprun, die werd verplaatst naar 13 september"] }),
   ]},
-  { week: 4, dates: "29 jun–5 jul", phase: "Fase 1 · Ritme & belastbaarheid", recovery: true, sessions: [
+  { week: 4, dates: "29 jun–5 jul", phase: "Fase 1 · Ritme en belastbaarheid", recovery: true, sessions: [
     ma({ zone: "herstel", km: 6, title: "6 km heel rustig",     goal: "Herstelweek", blocks: ["6 km, langzamer dan 7:15/km"] }),
     don({ zone: "duur",   km: 6, title: "6 km + 4×100 m",       goal: "Los blijven, geen harde prikkel", kind: "Soepel", blocks: ["6 km rustig", "4×100 m soepel"] }),
-    za({ zone: "lang",    km: 9, title: "9 km ontspannen",      goal: "Herstel", blocks: ["9 km laag in Z2"] }),
+    za({ zone: "lang",    km: 9, title: "9 km ontspannen",      goal: "Herstel", blocks: ["9 km heel rustig, langzamer dan 7:15/km"] }),
   ]},
 
   /* ---- Fase 2 · Duur opbouwen & eerste tempoblokken ---- */
   { week: 5, dates: "6–12 jul", phase: "Fase 2 · Duur opbouwen", sessions: [
     ma({ zone: "duur", km: 7,  title: "7 km rustig",   goal: "Volume", blocks: ["7 km op 6:45–7:15/km"] }),
-    don({ zone: "doel", km: 8, title: "4×1 km tempo",  goal: "HM-gevoel opdoen", blocks: ["1,5 km inlopen", "4×1 km @ 6:15–6:25/km", "3×2 min rustig tussen de blokken", "1 km uitlopen"] }),
+    don({ zone: "doel", km: 8, title: "4×1 km tempo",  goal: "HM-gevoel opdoen", blocks: ["1,5 km inlopen", "4×1 km op 6:15–6:25/km", "3×2 min rustig tussen de blokken", "1 km uitlopen"] }),
     za({ zone: "lang", km: 12, title: "12 km rustig",  goal: "Duur vasthouden", blocks: ["12 km op 6:55–7:25/km"] }),
   ]},
   { week: 6, dates: "13–19 jul", phase: "Fase 2 · Duur opbouwen", sessions: [
-    ma({ zone: "duur",     km: 7,  title: "7 km rustig",      goal: "Volume", blocks: ["7 km in Z2"] }),
-    don({ zone: "interval", km: 8, title: "5×600 m interval", goal: "Snelheidsuithouding", blocks: ["1,5 km inlopen", "5×600 m @ 5:50–6:05/km", "Rustig dribbelen ertussen", "1 km uitlopen"] }),
-    za({ zone: "lang", km: 14, title: "14 km rustig",         goal: "Langste tot nu toe", blocks: ["14 km op 6:55–7:30/km", "Voeding & drinken oefenen"] }),
+    ma({ zone: "duur",     km: 7,  title: "7 km rustig",      goal: "Volume", blocks: ["7 km rustig op 6:45–7:15/km"] }),
+    don({ zone: "interval", km: 8, title: "5×600 m interval", goal: "Snelheidsuithouding", blocks: ["1,5 km inlopen", "5×600 m op 5:50–6:05/km", "Rustig dribbelen ertussen", "1 km uitlopen"] }),
+    za({ zone: "lang", km: 14, title: "14 km rustig",         goal: "Langste tot nu toe", blocks: ["14 km op 6:55–7:30/km", "Voeding en drinken oefenen"] }),
   ]},
   { week: 7, dates: "20–26 jul", phase: "Fase 2 · Duur opbouwen", sessions: [
     ma({ zone: "duur", km: 8,  title: "8 km rustig",   goal: "Volume", blocks: ["8 km op 6:45–7:15/km"] }),
-    don({ zone: "doel", km: 8, title: "8 km opbouw",   goal: "Duurtempo voelen", blocks: ["5 km rustig opbouwen", "Laatste 3 km @ 6:25–6:35/km", "Rustig uitlopen"] }),
+    don({ zone: "doel", km: 8, title: "8 km opbouw",   goal: "Duurtempo voelen", blocks: ["5 km rustig opbouwen", "Laatste 3 km op 6:25–6:35/km", "Rustig uitlopen"] }),
     za({ zone: "lang", km: 15, title: "15 km rustig",  goal: "Duur uitbouwen", blocks: ["15 km op 6:55–7:30/km"] }),
   ]},
   { week: 8, dates: "27 jul–2 aug", phase: "Fase 2 · Duur opbouwen", recovery: true, sessions: [
     ma({ zone: "herstel", km: 6,  title: "6 km heel rustig",   goal: "Herstelweek", blocks: ["6 km, langzamer dan 7:15/km"] }),
     don({ zone: "duur",   km: 7,  title: "7 km + 5×100 m",     goal: "Los houden", kind: "Soepel", blocks: ["7 km rustig", "5×100 m soepel"] }),
-    za({ zone: "lang",    km: 11, title: "11 km ontspannen",   goal: "Herstel, geen tempo", blocks: ["11 km laag in Z2"] }),
+    za({ zone: "lang",    km: 11, title: "11 km ontspannen",   goal: "Herstel, geen tempo", blocks: ["11 km heel rustig, langzamer dan 7:15/km"] }),
   ]},
 
   /* ---- Fase 3 · Halve-marathonritme ---- */
   { week: 9, dates: "3–9 aug", phase: "Fase 3 · Halve-marathonritme", sessions: [
-    ma({ zone: "duur", km: 8,  title: "8 km rustig",   goal: "Volume", blocks: ["8 km in Z2"] }),
-    don({ zone: "tempo", km: 9, title: "3×2 km tempo", goal: "Drempelgevoel", blocks: ["1,5 km inlopen", "3×2 km @ 6:15–6:25/km", "2×3 min rustig tussen de blokken", "1 km uitlopen"] }),
+    ma({ zone: "duur", km: 8,  title: "8 km rustig",   goal: "Volume", blocks: ["8 km rustig op 6:45–7:15/km"] }),
+    don({ zone: "tempo", km: 9, title: "3×2 km tempo", goal: "Drempelgevoel", blocks: ["1,5 km inlopen", "3×2 km op 6:15–6:25/km", "2×3 min rustig tussen de blokken", "1 km uitlopen"] }),
     za({ zone: "lang", km: 15, title: "15 km rustig",  goal: "Duur vasthouden", blocks: ["15 km op 6:55–7:30/km"] }),
   ]},
   { week: 10, dates: "10–16 aug", phase: "Fase 3 · Halve-marathonritme", sessions: [
     ma({ zone: "duur",     km: 8,  title: "8 km rustig",      goal: "Volume", blocks: ["8 km op 6:45–7:15/km"] }),
-    don({ zone: "interval", km: 9, title: "6×800 m interval", goal: "Scherpte", blocks: ["1,5 km inlopen", "6×800 m @ 5:50–6:05/km", "400 m herstel ertussen", "1 km uitlopen"] }),
+    don({ zone: "interval", km: 9, title: "6×800 m interval", goal: "Scherpte", blocks: ["1,5 km inlopen", "6×800 m op 5:50–6:05/km", "400 m herstel ertussen", "1 km uitlopen"] }),
     za({ zone: "lang", km: 17, title: "17 km rustig",         goal: "Lange duur", blocks: ["17 km op 6:55–7:30/km", "Drinken + gel oefenen"] }),
   ]},
   { week: 11, dates: "17–23 aug", phase: "Fase 3 · Halve-marathonritme", sessions: [
-    ma({ zone: "duur", km: 9,  title: "9 km rustig",      goal: "Volume", blocks: ["9 km in Z2"] }),
-    don({ zone: "doel", km: 9, title: "2×3 km op HM-tempo", goal: "HM-ritme", blocks: ["1,5 km inlopen", "2×3 km @ 6:20–6:30/km", "3 min rustig tussen de twee blokken", "1 km uitlopen"] }),
+    ma({ zone: "duur", km: 9,  title: "9 km rustig",      goal: "Volume", blocks: ["9 km rustig op 6:45–7:15/km"] }),
+    don({ zone: "doel", km: 9, title: "2×3 km op HM-tempo", goal: "HM-ritme", blocks: ["1,5 km inlopen", "2×3 km op 6:20–6:30/km", "3 min rustig tussen de twee blokken", "1 km uitlopen"] }),
     za({ zone: "lang", km: 18, title: "18 km rustig",     goal: "Piek-duur nadert", blocks: ["18 km op 6:55–7:35/km"] }),
   ]},
   { week: 12, dates: "24–30 aug", phase: "Fase 3 · Halve-marathonritme", recovery: true, sessions: [
     ma({ zone: "herstel", km: 7,  title: "7 km heel rustig", goal: "Herstelweek", blocks: ["7 km, langzamer dan 7:15/km"] }),
-    don({ zone: "tempo",  km: 8,  title: "4×500 m relaxed",  goal: "Los, niet zwaar", kind: "Soepel", blocks: ["8 km totaal", "4×500 m @ 6:00/km", "Niet forceren, soepel blijven"] }),
-    za({ zone: "lang",    km: 13, title: "13 km ontspannen", goal: "Herstel", blocks: ["13 km laag in Z2"] }),
+    don({ zone: "tempo",  km: 8,  title: "4×500 m soepel",  goal: "Los, niet zwaar", kind: "Soepel", blocks: ["8 km totaal", "4×500 m op 6:00/km", "Niet forceren, soepel blijven"] }),
+    za({ zone: "lang",    km: 13, title: "13 km ontspannen", goal: "Herstel", blocks: ["13 km heel rustig, langzamer dan 7:15/km"] }),
   ]},
 
   /* ---- Fase 4 · Piek, taper & raceweek ---- */
-  { week: 13, dates: "31 aug–6 sep", phase: "Fase 4 · Piek, taper & race", sessions: [
+  { week: 13, dates: "31 aug–6 sep", phase: "Fase 4 · Piek en scherpte", sessions: [
     ma({ zone: "duur", km: 9,  title: "9 km rustig",   goal: "Volume", blocks: ["9 km op 6:45–7:15/km"] }),
-    don({ zone: "tempo", km: 10, title: "3×2 km tempo", goal: "Tempoblokken", blocks: ["1,5 km inlopen", "3×2 km @ 6:10–6:20/km", "2×3 min rustig tussen de blokken", "1 km uitlopen"] }),
+    don({ zone: "tempo", km: 10, title: "3×2 km tempo", goal: "Tempoblokken", blocks: ["1,5 km inlopen", "3×2 km op 6:10–6:20/km", "2×3 min rustig tussen de blokken", "1 km uitlopen"] }),
     za({ zone: "lang", km: 18, title: "18 km rustig",  goal: "Lange duur", blocks: ["18 km op 6:55–7:30/km", "Laatste 3 km max 6:35/km als je fris bent"] }),
   ]},
-  { week: 14, dates: "7–13 sep", phase: "Fase 4 · Piek, taper & race", tuneup: true, tuneupTag: "Kuiprun", raceLabel: "🏁 Kuiprun", sessions: [
-    ma({ zone: "duur", km: 9,  title: "9 km rustig", goal: "Volume, maar benen sparen voor zaterdag", blocks: ["9 km in Z2", "Bewust rustig: dit weekend loop je een wedstrijd"] }),
+  { week: 14, dates: "7–13 sep", phase: "Fase 4 · Piek en scherpte", tuneup: true, tuneupTag: "Kuiprun", raceLabel: "🏁 Kuiprun · 10 km", sessions: [
+    ma({ zone: "duur", km: 9,  title: "9 km rustig", goal: "Volume, maar benen sparen voor zondag", blocks: ["9 km rustig op 6:45–7:15/km", "Bewust rustig: zondag loop je de Kuiprun"] }),
     don({ zone: "duur", km: 7, title: "7 km met 4 versnellingen", goal: "Scherp blijven zonder moe te worden", kind: "Soepel", blocks: ["1,5 km inlopen", "4×1 min vlot op 6:10–6:20/km, met 2 min rustig joggen ertussen", "1 km uitlopen", "Geen zware intervallen meer: die heb je nu niet meer nodig"] }),
-    za({ zone: "doel", km: 10, title: "🏁 Kuiprun", goal: "Wedstrijd in plaats van je lange duurloop", kind: "Wedstrijd", blocks: ["Warm rustig in: 10 min joggen plus een paar korte versnellingen", "Loop 'm gecontroleerd: dit is 8 dagen vóór je halve marathon", "Richttempo 6:15–6:30/km, iets vlotter dan je racetempo maar niet alles geven", "Voelt het goed? Loop na afloop nog 4 à 5 km rustig uit, dan heb je alsnog een stevige duurloop", "Voelt het zwaar? Gewoon uitlopen en klaar, volgende week telt", "Geniet van de sfeer in De Kuip 🎉"] }),
+    zo({ zone: "doel", km: 10, title: "🏁 Kuiprun 10 km", goal: "Gelopen op zondag 13 september, een week voor je halve", kind: "Wedstrijd", why: "De Kuiprun was je generale: tien kilometer net iets vlotter dan je racetempo, precies een week voor je halve. Zo voel je hoe je lichaam op wedstrijdspanning reageert, zonder dat het je raceweek kost.", blocks: ["Warm rustig in: 10 min joggen plus een paar korte versnellingen", "Loop 'm gecontroleerd: dit is een week vóór je halve marathon", "Richttempo 6:15–6:30/km, iets vlotter dan je racetempo maar niet alles geven", "Voelt het goed? Loop na afloop nog 4 à 5 km rustig uit, dan heb je alsnog een stevige duurloop", "Voelt het zwaar? Gewoon uitlopen en klaar, volgende week telt", "Geniet van de sfeer in De Kuip 🎉"] }),
   ]},
-  { week: 15, dates: "14–20 sep", phase: "Fase 4 · Taper & racedag", taper: true, race: true, sessions: [
-    ma({ zone: "duur", km: 7, title: "7 km rustig", goal: "Taper: benen los houden", blocks: ["7 km op 6:45–7:15/km", "Niets zwaars meer deze week"] }),
-    don({ zone: "tempo", km: 6, title: "3×1 km kort & scherp", goal: "Scherp en fris blijven", kind: "Soepel", blocks: ["1,5 km inlopen + 3 versnellingen", "3×1 km @ 6:20–6:30/km", "2 min rust ertussen", "1 km uitlopen"] }),
-    za({ zone: "duur", km: 4, title: "4 km loslopen", goal: "Dag vóór de race", kind: "Soepel", blocks: ["4 km heel rustig", "3×100 m korte versnellingen", "Vroeg naar bed en goed eten"] }),
-    zo({ zone: "doel", km: 21.1, title: "🏁 Halve marathon", goal: "Doelrace · zondag 20 sep · richttijd 2:15", kind: "Doelrace", blocks: ["Eerste 5 km rustig op 6:35–6:45/km", "Daarna richting 6:25–6:35/km als benen & hartslag rustig blijven", "Laatste 5 km op gevoel", "Gel rond 40, 80 en eventueel 115 min", "Geniet ervan, dit is jouw dag! 🎉"] }),
+  { week: 15, dates: "14–20 sep", phase: "Fase 5 · Raceweek", taper: true, race: true, raceLabel: "🏅 Doelrace · halve marathon", sessions: [
+    ma({ zone: "herstel", km: 7, title: "7 km herstel", kind: "Herstel", goal: "Losmaken na je Kuiprun van zondag", blocks: ["7 km heel rustig, langzamer dan 7:15/km", "Zondag liep je de Kuiprun, dus vandaag alleen de benen losmaken", "Deze week loop je maar drie keer: maandag, zaterdag en zondag je halve"] }),
+    za({ zone: "duur", km: 4, title: "4 km loslopen", goal: "Dag vóór de race, je enige korte prikkel deze week", kind: "Soepel", why: "Kort loslopen de dag voor je race houdt je benen soepel zonder dat het energie kost. De paar korte versnellingen zetten je spieren alvast in de wedstrijdstand, zodat de eerste kilometer niet stroef voelt.", blocks: ["4 km heel rustig", "3×100 m korte versnellingen, soepel en niet sprinten", "Leg je spullen voor morgen alvast klaar", "Vroeg naar bed en goed eten"] }),
+    zo({ zone: "doel", km: 21.1, title: "🏁 Halve marathon", goal: "Doelrace · zondag 20 sep · richttijd 2:15", kind: "Doelrace", why: "Hier heb je vijftien weken naartoe gewerkt. Je lange duurlopen tot 18 km, je tempoblokken en de Kuiprun zitten allemaal in je benen. Start rustiger dan je wilt, zoek je eigen ritme en vertrouw op je opbouw. Uitlopen is het doel, 2:15 is de bonus.", blocks: ["Eerste 5 km rustig op 6:35–6:45/km", "Daarna richting 6:25–6:35/km als benen en hartslag rustig blijven", "Laatste 5 km op gevoel", "Gel rond 40, 80 en eventueel 115 min", "Geniet ervan, dit is jouw dag! 🎉"] }),
   ]},
 ];
 
 /* --- Extra advies (info-kaarten) ----------------------------------- */
 const INFO = [
-  { icon: "🔥", title: "Warming-up & cooling-down", items: [
+  { icon: "🔥", title: "Warming-up en cooling-down", items: [
     "Maandag: start 1 km rustig in.",
     "Donderdag: 1,5–2 km inlopen + 3 korte versnellingen vóór de blokken.",
     "Elke training: 1 km uitlopen of 5–8 min wandelen.",
   ]},
-  { icon: "💪", title: "Kracht, mobiliteit & rust", items: [
+  { icon: "💪", title: "Kracht, mobiliteit en rust", items: [
     "Kracht 2× per week 15–20 min: calf raises, step-ups, hip bridge, split squat, plank. Licht starten.",
     "Mobiliteit 5–8 min na het lopen: kuiten, heupbuigers, bilspieren, hamstrings. Geen agressief rekken.",
     "Dinsdag of zondag licht wandelen/fietsen mag; woensdag en vrijdag liefst echt rustig.",
-    "Pijn die je pas verandert, oplopende pijn of napijn de volgende ochtend: training inkorten.",
+    "Pijn die je looppas verandert, oplopende pijn of napijn de volgende ochtend: training inkorten.",
   ]},
-  { icon: "🥤", title: "Voeding & drinken", items: [
+  { icon: "🥤", title: "Voeding en drinken", items: [
     "2–3 uur voor een lange duurloop een koolhydraatrijke maaltijd; kort vooraf eventueel een banaan.",
     "Langer dan 75 min: 400–600 ml per uur, bij warmte met elektrolyten.",
     "Vanaf ~14 km: oefen met 30–45 g koolhydraten per uur (1 gel per 35–45 min).",
     "Na afloop binnen 1–2 uur eiwit + koolhydraten.",
   ]},
-  { icon: "🎯", title: "Taper & raceweek", items: [
-    "Week 15–16: omvang flink omlaag, intensiteit kort scherp houden.",
+  { icon: "🎯", title: "Taper en raceweek", items: [
+    "Je Kuiprun van zondag 13 september was je laatste wedstrijdprikkel. Vanaf nu bouw je af.",
+    "In de raceweek loop je maar drie keer: maandag rustig, zaterdag kort loslopen en zondag je halve.",
     "Je moet je bijna té fris voelen, dat is de bedoeling.",
     "Richttijd 2:15 ≈ 6:24/km, maar uitlopen is het hoofddoel.",
     "Start eerste 5 km rustig (6:35–6:45), daarna richting 6:25–6:35, laatste 5 km op gevoel.",
@@ -258,7 +259,7 @@ const BADGES = [
   { id: "ten",    icon: "🔟",  name: "Tien op de teller", desc: "10 trainingen gedaan",   test: (s) => s.done >= 10 },
   { id: "half",   icon: "⚡",  name: "Halverwege",        desc: "50% van het schema",     test: (s) => s.done >= s.total / 2 },
   { id: "week",   icon: "✅",  name: "Week compleet",     desc: "Een hele week afgerond", test: (s) => s.fullWeeks >= 1 },
-  { id: "long",   icon: "🏔️", name: "Lange loper",       desc: "≥ 18 km gelogd",         test: (s) => s.maxDist >= 18 },
+  { id: "long",   icon: "🏔️", name: "Lange loper",       desc: "≥ 18 km gelopen",         test: (s) => s.maxDist >= 18 },
   { id: "fast",   icon: "💨",  name: "Snelle benen",      desc: "Een run onder 6:15/km",  test: (s) => s.bestPace > 0 && s.bestPace < 375 },
   { id: "streak", icon: "🔥",  name: "On fire",           desc: "Reeks van 5 trainingen", test: (s) => s.streak >= 5 },
   { id: "finish", icon: "🏅",  name: "Finisher",          desc: "Halve marathon voltooid", test: (s) => s.raceDone },
@@ -391,7 +392,7 @@ function animateCount(el, to, suffix = "") {
   function step(t) {
     const k = Math.min(1, (t - t0) / dur);
     const v = to * (1 - Math.pow(1 - k, 3));
-    el.textContent = (dec ? v.toFixed(1) : Math.round(v)) + suffix;
+    el.textContent = (dec ? v.toFixed(1).replace(".", ",") : Math.round(v)) + suffix;
     if (k < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
@@ -467,7 +468,7 @@ function renderNextUp() {
     <button class="nextup-card zone-${next.zone}" data-week="${next.week}" data-day="${next.day}">
       <span class="nextup-eyebrow">Volgende training · week ${next.week} · ${next.dayLabel}</span>
       <strong>${next.title}</strong>
-      <span class="nextup-meta">${next[UNIT]} ${UNIT_LABEL} · ${z.name}</span>
+      <span class="nextup-meta">${nlNum(next[UNIT])} ${UNIT_LABEL} · ${z.name}</span>
       <span class="nextup-go">Openen ›</span>
     </button>`;
   box.querySelector(".nextup-card").addEventListener("click", () => openDetail(next.week, next.day));
@@ -547,7 +548,7 @@ function renderChart() {
     const fill = planned ? Math.round((doneMin / planned) * 100) : 0;
     const cls = ((w.race || w.tuneup || w.finish) ? "is-race" : w.recovery ? "is-rest" : "") + (w.week === cwBar ? " is-now" : "");
     return `
-      <div class="bar ${cls}" title="Week ${w.week}: ${planned} ${UNIT_LABEL} gepland">
+      <div class="bar ${cls}" title="Week ${w.week}: ${nlNum(Math.round(planned * 10) / 10)} ${UNIT_LABEL} gepland">
         <div class="bar-track" style="height:${h}%">
           <div class="bar-fill" style="height:${fill}%"></div>
         </div>
@@ -592,7 +593,7 @@ function renderWeeks() {
           <span class="session-body">
             ${raceKicker}
             <span class="session-title">${s.title}${isToday ? ' <span class="today-badge">Vandaag</span>' : ""}</span>
-            <span class="session-meta">${s[UNIT]} ${UNIT_LABEL} · ${s.kind}</span>
+            <span class="session-meta">${nlNum(s[UNIT])} ${UNIT_LABEL} · ${s.kind}</span>
             ${logged}
           </span>
           <span class="session-check">${e.done ? "✓" : ""}</span>
@@ -683,11 +684,11 @@ function renderRecords(stats) {
   const pace = fmtPace(stats.bestPace);
   const longest = UNIT === "min"
     ? (stats.maxTime ? `${Math.round(stats.maxTime / 60)} min` : "–")
-    : (stats.maxDist ? `${stats.maxDist} km` : "–");
+    : (stats.maxDist ? `${nlNum(stats.maxDist)} km` : "–");
   const rows = [
     ["⚡ Snelste tempo", pace || "–"],
     [UNIT === "min" ? "⏱️ Langste loop" : "🏔️ Verste loop", longest],
-    ["📊 Totaal gelopen", `${Math.round(stats.km * 10) / 10} km`],
+    ["📊 Totaal gelopen", `${nlNum(Math.round(stats.km * 10) / 10)} km`],
     ["🔥 Langste reeks", String(stats.streak)],
   ];
   sec.innerHTML = `<h3 class="panel-head">Jouw records</h3>
@@ -807,6 +808,8 @@ function renderAll() {
 function openDetail(week, day) {
   const w = PLAN.find((x) => x.week === week);
   const s = w.sessions.find((x) => x.day === day);
+  /* Alleen de wedstrijd zelf is een wedstrijd, niet de andere trainingen in die week. */
+  const isRaceDetail = (w.race || w.tuneup || w.finish) && s.day === w.sessions[w.sessions.length - 1].day;
   const id = sid(week, day);
   const e = log[id] || {};
   const z = zoneByKey[s.zone];
@@ -815,7 +818,7 @@ function openDetail(week, day) {
   $("detailTitle").textContent = `Week ${week} · ${s.dayLabel}`;
   $("detailBody").innerHTML = `
     <div class="detail-hero zone-${s.zone}">
-      <span class="detail-kind">${s.kind} · ${s[UNIT]} ${UNIT_LABEL}</span>
+      <span class="detail-kind">${s.kind} · ${nlNum(s[UNIT])} ${UNIT_LABEL}</span>
       <h2>${s.title}</h2>
       <p class="detail-goal">${s.goal}</p>
       <span class="detail-zone">${z.name} · ${z.info}</span>
@@ -833,7 +836,7 @@ function openDetail(week, day) {
     </div>
 
     <section class="detail-block why">
-      <h4>${w.race || w.tuneup ? "Waarom deze wedstrijd" : "Waarom deze training"}</h4>
+      <h4>${isRaceDetail ? "Waarom deze wedstrijd" : "Waarom deze training"}</h4>
       <p>${s.why || WHY[s.zone] || ""}</p>
     </section>
 
@@ -843,7 +846,7 @@ function openDetail(week, day) {
     </section>
 
     <section class="detail-block">
-      <h4>${w.race || w.tuneup ? "Invullen na de wedstrijd" : "Invullen na de training"}</h4>
+      <h4>${isRaceDetail ? "Invullen na de wedstrijd" : "Invullen na de training"}</h4>
       <div class="form-grid">
         <label>Afstand (km)
           <input id="fDistance" type="text" inputmode="decimal" placeholder="bv. 6,2" value="${escapeHtml(e.distance ?? "")}">
@@ -911,7 +914,7 @@ function openDetail(week, day) {
     log[id] = cur; saveLog();
     if (cur.done) {
       celebrate();
-      toast(w.finish ? "🌞 Zomer rond! Wat een strijder!" : w.race ? "🏅 Finisher! Wat een prestatie, strijder!" : w.tuneup ? "🏁 Wedstrijd voltooid, sterk gepacet!" : DONE[Math.floor(Math.random() * DONE.length)]);
+      toast(!isRaceDetail ? DONE[Math.floor(Math.random() * DONE.length)] : w.finish ? "🌞 Zomer rond! Wat een strijder!" : w.race ? "🏅 Finisher! Wat een prestatie, strijder!" : w.tuneup ? "🏁 Wedstrijd voltooid, sterk gepacet!" : DONE[Math.floor(Math.random() * DONE.length)]);
     }
     closeDetail();
   });
@@ -1104,7 +1107,7 @@ function calendarFile() {
       `DTSTART;VALUE=DATE:${icsDay(date)}`,
       `DTEND;VALUE=DATE:${icsDay(addDays(date, 1))}`,
       `SUMMARY:${icsEscape(`${CONFIG.footEmoji || "🏃\u200d♀️"} ${session.title}`)}`,
-      `DESCRIPTION:${icsEscape(`${session[UNIT]} ${UNIT_LABEL} · ${z.name}\n${session.goal}\n\n${session.blocks.join("\n")}`)}`,
+      `DESCRIPTION:${icsEscape(`${nlNum(session[UNIT])} ${UNIT_LABEL} · ${z.name}\n${session.goal}\n\n${session.blocks.join("\n")}`)}`,
       "TRANSP:TRANSPARENT",
       "END:VEVENT",
     );
