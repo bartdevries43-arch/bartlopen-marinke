@@ -1,5 +1,5 @@
 /* ================================================================== *
- *  Marinke's Halve Marathon, Run Coach
+ *  Marinke, Run Coach: van haar halve naar de 10 km en de Bruggenloop
  *  Vast schema + invullen/afvinken, Strava-achtige stats, badges.
  *  Alles lokaal in de browser. Geen server nodig (werkt ook via file://).
  * ================================================================== */
@@ -11,10 +11,10 @@ const CONFIG = {
   unit:       "km",
   zonePaceSuffix: "/km",
   footEmoji:  "🏃‍♀️",
-  mottos: ["Zet 'm op, strijder!", "Lekker bezig, strijder!", "Je bouwt 'm rustig op, strijder.", "Halverwege, knap volgehouden! ⚡", "Bijna race-klaar, strijder!", "Finisher! Wat een prestatie, strijder. 🏅"],
-  appName:    "Op naar 21,1K",            // titel boven in de app
+  mottos: ["Zet 'm op, strijder!", "Lekker bezig, strijder!", "Je bouwt 'm rustig op, strijder.", "Halverwege, knap volgehouden! ⚡", "Bijna race-klaar, strijder!", "Bruggenloop volbracht! Wat een prestatie, strijder. 🏅"],
+  appName:    "Op naar 15K",                      // titel boven in de app
   runner:     "Marinke",                  // naam van de loper
-  goal:       "Halve marathon in ±2:15",  // doel (groot in de hero)
+  goal:       "10 km in 60 min, dan 15 km in 1:30", // doel (groot in de hero)
   startDate:  new Date(2026, 5, 8),       // maandag van week 1 (maand 0-based: 5 = juni)
   storeKey:   "marinkeHM.log.v1",         // UNIEKE opslagsleutel, per loper anders!
   coachName:  "Coach Bart",               // naam van de coach
@@ -37,13 +37,13 @@ const TOTAL_WEEKS = 15;
 const COACH_INITIAL = (CONFIG.coachName.replace(/^coach\s+/i, "")[0] || "C").toUpperCase();
 
 /* --- Tempozones (afgestemd op Marinke) ----------------------------- */
-/* NB: de zonesleutel "doel" wordt hergebruikt voor het halve-marathontempo,
+/* NB: de zonesleutel "doel" wordt hergebruikt voor het wedstrijdtempo (6:00/km),
    zodat alle bestaande kleuren in styles.css blijven werken.            */
 const ZONES = [
   { key: "herstel",  name: "Herstel",          pace: "langzamer dan 7:15", info: "RPE 2-3 · uitlopen" },
   { key: "duur",     name: "Rustige duur",     pace: "6:45–7:15",          info: "RPE 3-4 · praten kan makkelijk" },
   { key: "lang",     name: "Lange duurloop",   pace: "6:55–7:30",          info: "RPE 3-4 · bij warmte nog rustiger" },
-  { key: "doel",     name: "HM-tempo",         pace: "≈ 6:24",             info: "RPE 5-6 · gecontroleerd" },
+  { key: "doel",     name: "Wedstrijdtempo",   pace: "≈ 6:00",             info: "RPE 6-7 · gecontroleerd snel" },
   { key: "tempo",    name: "Tempoblokken",     pace: "6:05–6:20",          info: "RPE 6-7 · stevig" },
   { key: "interval", name: "Interval",         pace: "5:45–6:05",          info: "RPE 7-8 · nooit sprinten" },
 ];
@@ -69,7 +69,7 @@ const COACH = {
     "Bewust rustiger dan je voelt, dat is precies goed.",
     "Geduld is je kracht vandaag, strijder. Lekker doorkabbelen.",
     "Drinken en happen oefenen mag. Rustig en constant.",
-    "Dit is de basis onder je halve, strijder. Stap voor stap.",
+    "Dit is de basis onder je 15 km, strijder. Stap voor stap.",
   ],
   tempo: [
     "Tempoblok, strijder: stevig, maar netjes onder controle.",
@@ -90,10 +90,10 @@ const COACH = {
     "Elke herhaling hetzelfde. Beheerst en netjes, strijder.",
   ],
   doel: [
-    "Halve-marathontempo, strijder. Onthoud hoe dit voelt.",
+    "Wedstrijdtempo, strijder. Onthoud hoe dit voelt.",
     "Dit is je wedstrijdritme. Vertrouw op je benen, strijder.",
     "Beheerst op tempo blijven, precies waar je het voor doet.",
-    "Voel je HM-tempo, strijder. Je bouwt er rustig naartoe.",
+    "Voel je 6:00/km, strijder. Je bouwt er rustig naartoe.",
     "Niet sneller dan dit. Rustig vertrouwen, strijder.",
     "Dit ritme ga je terugzien op de startlijn. Prent het in.",
     "Gecontroleerd op koers, strijder. Mooi in balans.",
@@ -125,10 +125,10 @@ const coachLine = (zone) => {
 /* --- Waarom deze training? (uitleg per type) ----------------------- */
 const WHY = {
   duur:     "Rustige duurlopen bouwen je aerobe motor: sterker hart, meer haarvaten en betere vetverbranding. Het grootste deel van je trainingstijd hoort hier rustig te zijn, zo kun je vaker en blessurevrij lopen.",
-  lang:     "De lange duurloop traint je uithoudingsvermogen en de gewenning aan tijd op de benen. Je leert energie sparen en mentaal doorzetten, de basis onder een sterke halve marathon. Bewust rustiger dan je 10 km-tempo.",
-  tempo:    "Tempoblokken liggen rond je omslagpunt. Je leert sneller lopen zónder te verzuren, precies wat je halve-marathontempo structureel omhoog tilt.",
+  lang:     "De lange duurloop traint je uithoudingsvermogen en de gewenning aan tijd op de benen. Je leert energie sparen en mentaal doorzetten, de basis onder een sterke 15 km. Bewust rustiger dan je wedstrijdtempo.",
+  tempo:    "Tempoblokken liggen rond je omslagpunt. Je leert sneller lopen zónder te verzuren, precies wat je wedstrijdtempo structureel omhoog tilt.",
   interval: "Korte, snelle herhalingen prikkelen je VO2max en loopeconomie. Je benen leren vlot schakelen, zonder lang in het rood te gaan.",
-  doel:     "Lopen op je halve-marathontempo (≈ 6:24/km) maakt dat tempo vertrouwd. Op de racedag voelt het dan als thuiskomen in plaats van een gok.",
+  doel:     "Lopen op je wedstrijdtempo (≈ 6:00/km) maakt dat tempo vertrouwd. Op de racedag voelt het dan als thuiskomen in plaats van een gok.",
   herstel:  "Herstel is waar je sterker wordt. Lichte inspanning houdt het bloed stromen zonder nieuwe belasting, zodat de winst van de zware dagen echt binnenkomt.",
 };
 
@@ -218,10 +218,70 @@ const PLAN = [
     don({ zone: "duur", km: 7, title: "7 km met 4 versnellingen", goal: "Scherp blijven zonder moe te worden", kind: "Soepel", blocks: ["1,5 km inlopen", "4×1 min vlot op 6:10–6:20/km, met 2 min rustig joggen ertussen", "1 km uitlopen", "Geen zware intervallen meer: die heb je nu niet meer nodig"] }),
     zo({ zone: "doel", km: 10, title: "🏁 Kuiprun 10 km", goal: "Gelopen op zondag 13 september, een week voor je halve", kind: "Wedstrijd", why: "De Kuiprun was je generale: tien kilometer net iets vlotter dan je racetempo, precies een week voor je halve. Zo voel je hoe je lichaam op wedstrijdspanning reageert, zonder dat het je raceweek kost.", blocks: ["Warm rustig in: 10 min joggen plus een paar korte versnellingen", "Loop 'm gecontroleerd: dit is een week vóór je halve marathon", "Richttempo 6:15–6:30/km, iets vlotter dan je racetempo maar niet alles geven", "Voelt het goed? Loop na afloop nog 4 à 5 km rustig uit, dan heb je alsnog een stevige duurloop", "Voelt het zwaar? Gewoon uitlopen en klaar, volgende week telt", "Geniet van de sfeer in De Kuip 🎉"] }),
   ]},
-  { week: 15, dates: "14–20 sep", phase: "Fase 5 · Raceweek", taper: true, race: true, raceLabel: "🏅 Doelrace · halve marathon", sessions: [
+  { week: 15, dates: "14–20 sep", phase: "Fase 5 · Raceweek", taper: true, race: true, raceLabel: "🏅 Doelrace · halve marathon", raceSub: "Halve marathon · richttijd 2:15", sessions: [
     ma({ zone: "herstel", km: 7, title: "7 km herstel", kind: "Herstel", goal: "Losmaken na je Kuiprun van zondag", blocks: ["7 km heel rustig, langzamer dan 7:15/km", "Zondag liep je de Kuiprun, dus vandaag alleen de benen losmaken", "Deze week loop je maar drie keer: maandag, zaterdag en zondag je halve"] }),
     za({ zone: "duur", km: 4, title: "4 km loslopen", goal: "Dag vóór de race, je enige korte prikkel deze week", kind: "Soepel", why: "Kort loslopen de dag voor je race houdt je benen soepel zonder dat het energie kost. De paar korte versnellingen zetten je spieren alvast in de wedstrijdstand, zodat de eerste kilometer niet stroef voelt.", blocks: ["4 km heel rustig", "3×100 m korte versnellingen, soepel en niet sprinten", "Leg je spullen voor morgen alvast klaar", "Vroeg naar bed en goed eten"] }),
     zo({ zone: "doel", km: 21.1, title: "🏁 Halve marathon", goal: "Doelrace · zondag 20 sep · richttijd 2:15", kind: "Doelrace", why: "Hier heb je vijftien weken naartoe gewerkt. Je lange duurlopen tot 18 km, je tempoblokken en de Kuiprun zitten allemaal in je benen. Start rustiger dan je wilt, zoek je eigen ritme en vertrouw op je opbouw. Uitlopen is het doel, 2:15 is de bonus.", blocks: ["Eerste 5 km rustig op 6:35–6:45/km", "Daarna richting 6:25–6:35/km als benen en hartslag rustig blijven", "Laatste 5 km op gevoel", "Gel rond 40, 80 en eventueel 115 min", "Geniet ervan, dit is jouw dag! 🎉"] }),
+  ]},
+  { week: 16, dates: "21–27 sep", phase: "Fase 6 · Herstel na je halve", recovery: true, sessions: [
+    ma({ zone: "herstel", km: 5, title: "5 km herstel", kind: "Herstel", goal: "Benen losmaken na je halve marathon", why: "Na 21,1 km heeft je lichaam microschade opgelopen die tijd nodig heeft. Heel rustig bewegen brengt bloed naar je spieren en ruimt sneller op dan stilzitten. Dit is geen training, dit is opruimen.", blocks: ["5 km heel rustig, langzamer dan 7:15/km", "Voelt het stroef? Wandelpauzes mogen gewoon", "Geen tempo, geen versnellingen, niets"] }),
+    don({ zone: "duur", km: 6, title: "6 km rustig", kind: "Rustig", goal: "Weer op gang komen", blocks: ["6 km op 6:45–7:15/km", "Praten moet makkelijk kunnen", "Stijve kuiten of hamstrings? Inkorten mag"] }),
+    za({ zone: "duur", km: 8, title: "8 km rustig", kind: "Rustige duurloop", goal: "Rustig je ritme terugpakken", blocks: ["8 km op 6:45–7:15/km", "Dit is de laatste week waarin je nergens naartoe hoeft", "Volgende week beginnen we aan de Jan Louter loop"] }),
+  ]},
+  { week: 17, dates: "28 sep–4 okt", phase: "Fase 7 · Scherp voor de 10", sessions: [
+    ma({ zone: "duur", km: 8, title: "8 km rustig", goal: "Basis, benen blijven rustig", blocks: ["8 km op 6:45–7:15/km", "Rustig betekent echt rustig, de snelheid komt donderdag"] }),
+    don({ zone: "tempo", km: 7, title: "7 km met 5×1 min", kind: "Kwaliteit", goal: "Je benen herinneren aan 6:00/km", why: "Je halve liep je op ongeveer 6:24/km. Voor 10 km onder het uur moet 6:00/km normaal gaan voelen. Korte blokjes op dat tempo zijn de zachtste manier om daar weer aan te wennen, kort genoeg om niet te verzuren.", blocks: ["1,5 km inlopen plus 3 korte versnellingen", "5×1 min op 6:00/km, met 2 min rustig joggen ertussen", "1 km uitlopen", "Voelt 6:00 zwaar? Dat hoort deze week nog, het went snel"] }),
+    za({ zone: "lang", km: 10, title: "10 km rustig", goal: "Tijd op de benen", blocks: ["10 km op 6:55–7:30/km", "Bewust rustiger dan je wedstrijdtempo"] }),
+  ]},
+  { week: 18, dates: "5–11 okt", phase: "Fase 7 · Scherp voor de 10", taper: true, race: true, raceLabel: "🏅 Jan Louter loop · 10 km", raceSub: "Jan Louter loop 10 km · richttijd 60:00", sessions: [
+    ma({ zone: "duur", km: 6, title: "6 km rustig met 3 versnellingen", goal: "Los en scherp, niet moe", blocks: ["6 km op 6:45–7:15/km", "3×100 m soepele versnellingen aan het eind", "Niet sprinten, alleen even wakker maken"] }),
+    don({ zone: "duur", km: 5, title: "5 km loslopen", kind: "Soepel", goal: "Laatste prikkel voor zaterdag", blocks: ["5 km heel rustig", "2×1 min op 6:00/km, puur als gevoelscheck", "Daarna twee dagen rust, dat is bewust"] }),
+    za({ zone: "doel", km: 10, title: "🏁 Jan Louter loop 10 km", kind: "Doelrace", goal: "Zaterdag 10 oktober · richttijd 60:00", why: "Tien kilometer onder het uur betekent 6:00/km, iets meer dan twintig seconden per kilometer sneller dan je halve. Dat kan, omdat de afstand meer dan gehalveerd is. De valkuil is de eerste kilometer: die voelt makkelijk en gaat dan zomaar op 5:40. Begin op tempo, niet erboven.", blocks: ["Warm in: 10 min joggen plus 3 korte versnellingen, tot 15 min voor de start", "Eerste 2 km op 6:00–6:05/km, niet sneller, ook niet als het makkelijk voelt", "Km 3 tot 7 op 6:00/km, zoek je ritme en tel niet te veel", "Laatste 3 km: alles wat er nog in zit, hier mag het pijn doen", "Onder het uur betekent gemiddeld 6:00, dus 5 seconden verlies per km kost je het doel", "Veel plezier, geniet ervan 🎉"] }),
+  ]},
+  { week: 19, dates: "12–18 okt", phase: "Fase 8 · Basis voor 15 km", recovery: true, sessions: [
+    ma({ zone: "herstel", km: 5, title: "5 km herstel", kind: "Herstel", goal: "Losmaken na je 10 km", blocks: ["5 km heel rustig, langzamer dan 7:15/km", "Zaterdag ging je diep, vandaag alleen bloed rondpompen"] }),
+    don({ zone: "duur", km: 7, title: "7 km rustig", goal: "Rustig weer opbouwen", blocks: ["7 km op 6:45–7:15/km", "Geen tempo deze week, je lichaam verwerkt nog"] }),
+    za({ zone: "lang", km: 10, title: "10 km rustig", goal: "Start van je opbouw naar 15 km", blocks: ["10 km op 6:55–7:30/km", "Vanaf nu bouwen we je lange duurloop op richting 16 km"] }),
+  ]},
+  { week: 20, dates: "19–25 okt", phase: "Fase 8 · Basis voor 15 km", sessions: [
+    ma({ zone: "duur", km: 8, title: "8 km rustig", goal: "Basis", blocks: ["8 km op 6:45–7:15/km"] }),
+    don({ zone: "tempo", km: 8, title: "2×2 km tempo", kind: "Kwaliteit", goal: "Langer op tempo blijven", why: "Voor 15 km op 6:00/km moet je dat tempo niet even kunnen, maar lang kunnen vasthouden. Blokken van 2 km trainen precies dat: je leert het tempo dragen in plaats van het te overleven.", blocks: ["1,5 km inlopen plus 3 versnellingen", "2×2 km op 6:05–6:15/km, met 3 min rustig joggen ertussen", "1 km uitlopen"] }),
+    za({ zone: "lang", km: 12, title: "12 km rustig", goal: "Lange duurloop", blocks: ["12 km op 6:55–7:30/km", "Neem water mee als je langer dan 75 min onderweg bent"] }),
+  ]},
+  { week: 21, dates: "26 okt–1 nov", phase: "Fase 8 · Basis voor 15 km", sessions: [
+    ma({ zone: "duur", km: 8, title: "8 km rustig", goal: "Basis", blocks: ["8 km op 6:45–7:15/km"] }),
+    don({ zone: "interval", km: 8, title: "6×2 min interval", kind: "Kwaliteit", goal: "Loopsnelheid en vermogen", blocks: ["1,5 km inlopen plus 3 versnellingen", "6×2 min op 5:45–6:00/km, met 2 min rustig joggen ertussen", "1 km uitlopen", "Nooit sprinten, beheerst snel is het doel"] }),
+    za({ zone: "lang", km: 13, title: "13 km rustig", goal: "Lange duurloop", blocks: ["13 km op 6:55–7:30/km", "Laatste 2 km mag iets vlotter als het lekker loopt"] }),
+  ]},
+  { week: 22, dates: "2–8 nov", phase: "Fase 8 · Basis voor 15 km", sessions: [
+    ma({ zone: "duur", km: 9, title: "9 km rustig", goal: "Basis", blocks: ["9 km op 6:45–7:15/km"] }),
+    don({ zone: "tempo", km: 8, title: "3×2 km tempo", kind: "Kwaliteit", goal: "Meer tijd rond je omslagpunt", blocks: ["1,5 km inlopen plus 3 versnellingen", "3×2 km op 6:05–6:15/km, met 3 min rustig joggen ertussen", "1 km uitlopen"] }),
+    za({ zone: "lang", km: 14, title: "14 km rustig", goal: "Lange duurloop", blocks: ["14 km op 6:55–7:30/km", "Dit is je langste sinds je halve, rustig blijven"] }),
+  ]},
+  { week: 23, dates: "9–15 nov", phase: "Fase 8 · Basis voor 15 km", recovery: true, sessions: [
+    ma({ zone: "herstel", km: 6, title: "6 km herstel", kind: "Herstel", goal: "Rustweek, je lichaam maakt de winst", why: "Je wordt niet sterker tijdens het trainen maar tijdens het herstellen. Na drie opbouwweken is een lichtere week geen luxe: dat is het moment waarop je lichaam de vorige weken verzilvert.", blocks: ["6 km heel rustig", "Deze week bewust minder, dat is de bedoeling"] }),
+    don({ zone: "duur", km: 7, title: "7 km met 4 versnellingen", kind: "Soepel", goal: "Scherp blijven zonder moe te worden", blocks: ["1 km inlopen", "4×1 min vlot op 6:00/km, met 2 min joggen ertussen", "1 km uitlopen"] }),
+    za({ zone: "duur", km: 10, title: "10 km rustig", goal: "Kort lang", blocks: ["10 km op 6:55–7:30/km"] }),
+  ]},
+  { week: 24, dates: "16–22 nov", phase: "Fase 9 · Op weg naar de Bruggenloop", sessions: [
+    ma({ zone: "duur", km: 9, title: "9 km rustig", goal: "Basis", blocks: ["9 km op 6:45–7:15/km"] }),
+    don({ zone: "interval", km: 8, title: "4×1 km", kind: "Kwaliteit", goal: "Net onder je wedstrijdtempo", blocks: ["1,5 km inlopen plus 3 versnellingen", "4×1 km op 5:55–6:05/km, met 2,5 min rustig joggen ertussen", "1 km uitlopen"] }),
+    za({ zone: "lang", km: 15, title: "15 km rustig", goal: "Je eerste 15 km, de afstand van de Bruggenloop", why: "Vandaag loop je de wedstrijdafstand een keer rustig uit. Niet op tempo, gewoon om te weten dat 15 km geen onbekende meer is als je in december op de kade staat.", blocks: ["15 km op 6:55–7:30/km", "Tempo is vandaag onbelangrijk, de afstand is het doel", "Drink onderweg, je bent ruim 100 min bezig"] }),
+  ]},
+  { week: 25, dates: "23–29 nov", phase: "Fase 9 · Op weg naar de Bruggenloop", sessions: [
+    ma({ zone: "duur", km: 9, title: "9 km rustig", goal: "Basis", blocks: ["9 km op 6:45–7:15/km"] }),
+    don({ zone: "doel", km: 9, title: "2×3 km op wedstrijdtempo", kind: "Kwaliteit", goal: "6:00/km laten voelen als vanzelf", why: "Dit is de belangrijkste training van je blok. Twee keer drie kilometer op exact 6:00/km leert je lichaam het tempo van de Bruggenloop kennen. Kun je dit afmaken zonder dat de tweede blok ontspoort, dan is 1:30 realistisch.", blocks: ["1,5 km inlopen plus 3 versnellingen", "2×3 km op 6:00/km, met 4 min rustig joggen ertussen", "1 km uitlopen", "Houd je tempo in de gaten, niet sneller dan 5:55"] }),
+    za({ zone: "lang", km: 16, title: "16 km rustig", goal: "Langste duurloop van dit blok", blocks: ["16 km op 6:55–7:30/km", "Laatste 3 km op 6:20–6:30/km als je je goed voelt", "Hierna wordt het lichter richting de race"] }),
+  ]},
+  { week: 26, dates: "30 nov–6 dec", phase: "Fase 9 · Op weg naar de Bruggenloop", sessions: [
+    ma({ zone: "duur", km: 8, title: "8 km rustig", goal: "Basis, volume gaat omlaag", blocks: ["8 km op 6:45–7:15/km"] }),
+    don({ zone: "interval", km: 8, title: "5×1 km", kind: "Kwaliteit", goal: "Laatste scherpe training", blocks: ["1,5 km inlopen plus 3 versnellingen", "5×1 km op 5:55–6:05/km, met 2,5 min rustig joggen ertussen", "1 km uitlopen", "Dit is je laatste harde sessie, daarna alleen nog scherp houden"] }),
+    za({ zone: "doel", km: 12, title: "12 km met 4 km op wedstrijdtempo", goal: "Generale voor de Bruggenloop", blocks: ["6 km rustig op 6:55–7:15/km", "4 km op 6:00/km, precies je racetempo", "2 km uitlopen", "Zo voelt de tweede helft van je race"] }),
+  ]},
+  { week: 27, dates: "7–13 dec", phase: "Fase 10 · Raceweek Bruggenloop", taper: true, race: true, raceLabel: "🏅 Doelrace · Bruggenloop 15 km", raceSub: "Bruggenloop 15 km · richttijd 1:30", sessions: [
+    ma({ zone: "duur", km: 6, title: "6 km rustig", goal: "Benen los, hoofd rustig", blocks: ["6 km op 6:45–7:15/km", "Deze week loop je maar drie keer: maandag, donderdag en zondag de race"] }),
+    don({ zone: "duur", km: 5, title: "5 km met 4×1 min", kind: "Soepel", goal: "Scherp houden, niets meer opbouwen", why: "In de laatste week win je niets meer met trainen, je kunt het alleen nog verliezen. Korte stukjes op racetempo houden je benen wakker zonder energie te kosten.", blocks: ["1 km inlopen", "4×1 min op 6:00/km, met 2 min joggen ertussen", "1 km uitlopen", "Daarna rust tot zondag, ook als je je onrustig voelt"] }),
+    zo({ zone: "doel", km: 15, title: "🏁 Bruggenloop 15 km", kind: "Doelrace", goal: "Zondag 13 december · richttijd 1:30", why: "Vijftien kilometer op 6:00/km is precies het tempo waarop je in oktober je 10 km liep, maar dan anderhalf keer zo lang. Dat is ambitieus en het kan, mits je de eerste vijf kilometer niet cadeau weggeeft. De bruggen kosten je even kracht: loop ze op gevoel en pak het tempo terug op het vlakke.", blocks: ["Warm in: 10 min joggen plus 3 korte versnellingen", "Eerste 5 km op 6:00–6:05/km, geen seconde sneller", "Km 5 tot 12 op 6:00/km, blijf bij jezelf en laat je niet meetrekken", "Op de bruggen: gelijke inspanning, niet gelijk tempo. Erover heen pak je het terug", "Laatste 3 km leeg lopen", "Loopt het niet? 1:33 is nog steeds een prachtige tijd, uitlopen gaat voor", "Geniet van Rotterdam in de winterzon 🌉"] }),
   ]},
 ];
 
@@ -238,6 +298,18 @@ const INFO = [
     "Dinsdag of zondag licht wandelen/fietsen mag; woensdag en vrijdag liefst echt rustig.",
     "Pijn die je looppas verandert, oplopende pijn of napijn de volgende ochtend: training inkorten.",
   ]},
+  { icon: "🎽", title: "Jan Louter loop · 10 km", items: [
+    "Zaterdag 10 oktober, richttijd 60:00. Dat is precies 6:00/km, van start tot finish.",
+    "Je halve liep je op ongeveer 6:24/km. Twintig seconden per kilometer sneller over de halve afstand is een reële stap.",
+    "Grootste valkuil is de eerste kilometer: die voelt altijd makkelijk en gaat zomaar op 5:40.",
+    "Vijf seconden per kilometer verlies kost je het hele doel, dus kijk de eerste 3 km vaker op je horloge dan je zou willen.",
+  ]},
+  { icon: "🌉", title: "Bruggenloop · 15 km", items: [
+    "Zondag 13 december, richttijd 1:30. Dat is óók 6:00/km, maar dan anderhalf keer zo lang.",
+    "Eerlijk: dit is het ambitieuze deel van je najaar. Lukt 1:30 niet, dan is alles rond 1:33 nog steeds een sterke race.",
+    "De bruggen kosten kracht. Loop ze op gelijke inspanning, niet op gelijk tempo, en pak je tempo terug op het vlakke.",
+    "December betekent koud starten: langer inlopen, handschoenen aan en een laagje dat je onderweg kwijt kunt.",
+  ]},
   { icon: "🥤", title: "Voeding en drinken", items: [
     "2–3 uur voor een lange duurloop een koolhydraatrijke maaltijd; kort vooraf eventueel een banaan.",
     "Langer dan 75 min: 400–600 ml per uur, bij warmte met elektrolyten.",
@@ -246,9 +318,9 @@ const INFO = [
   ]},
   { icon: "🎯", title: "Taper en raceweek", items: [
     "Je Kuiprun van zondag 13 september was je laatste wedstrijdprikkel. Vanaf nu bouw je af.",
-    "In de raceweek loop je maar drie keer: maandag rustig, zaterdag kort loslopen en zondag je halve.",
+    "In een raceweek loop je maar drie keer: maandag rustig, donderdag kort scherp en dan je race.",
     "Je moet je bijna té fris voelen, dat is de bedoeling.",
-    "Richttijd 2:15 ≈ 6:24/km, maar uitlopen is het hoofddoel.",
+    "Richttijd 1:30 over 15 km ≈ 6:00/km, maar heel en blij finishen gaat altijd voor.",
     "Start eerste 5 km rustig (6:35–6:45), daarna richting 6:25–6:35, laatste 5 km op gevoel.",
   ]},
 ];
@@ -262,7 +334,11 @@ const BADGES = [
   { id: "long",   icon: "🏔️", name: "Lange loper",       desc: "≥ 18 km gelopen",         test: (s) => s.maxDist >= 18 },
   { id: "fast",   icon: "💨",  name: "Snelle benen",      desc: "Een run onder 6:15/km",  test: (s) => s.bestPace > 0 && s.bestPace < 375 },
   { id: "streak", icon: "🔥",  name: "On fire",           desc: "Reeks van 5 trainingen", test: (s) => s.streak >= 5 },
-  { id: "finish", icon: "🏅",  name: "Finisher",          desc: "Halve marathon voltooid", test: (s) => s.raceDone },
+  { id: "finish", icon: "🏅",  name: "Finisher",          desc: "Halve marathon voltooid", test: (s) => s.hmDone },
+  { id: "jan10",  icon: "🎽",  name: "Jan Louter",        desc: "10 km wedstrijd gelopen", test: (s) => s.tienDone },
+  { id: "sub60",  icon: "⏱️", name: "Onder het uur",     desc: "10 km binnen 60:00",      test: (s) => s.tienSub60 },
+  { id: "brug",   icon: "🌉",  name: "Bruggenloop",       desc: "15 km volbracht",         test: (s) => s.brugDone },
+  { id: "sub90",  icon: "🏆",  name: "Anderhalf uur",     desc: "15 km binnen 1:30",       test: (s) => s.brugSub90 },
 ];
 
 /* ================================================================== *
@@ -279,6 +355,10 @@ const sid = (week, day) => `w${week}-${day}`;
 const flatSessions = PLAN.flatMap((w) => w.sessions.map((s) => ({ ...s, week: w.week })));
 const totalSessions = flatSessions.length;
 const LAST_SESSION = flatSessions[flatSessions.length - 1];
+/* Vaste ankers: zo blijft een behaalde race-badge staan als er weken bijkomen. */
+const HM_SESSION = { week: 15, day: "zo" };        /* halve marathon, 20 sep */
+const TIEN_SESSION = { week: 18, day: "za" };      /* Jan Louter loop, 10 okt */
+const BRUG_SESSION = { week: 27, day: "zo" };      /* Bruggenloop, 13 dec */
 const DAY_OFFSET = { ma: 0, di: 1, wo: 2, do: 3, vr: 4, za: 5, zo: 6, d1: 0, d2: 2, d3: 4, d4: 6 };
 
 const escapeHtml = (value = "") => String(value)
@@ -374,7 +454,12 @@ function computeStats() {
   PLAN.forEach((w) => {
     if (w.sessions.every((s) => log[sid(w.week, s.day)]?.done)) fullWeeks++;
   });
-  return { done, total: totalSessions, km, maxDist, maxTime, bestPace, secs, raceDone, streak, fullWeeks };
+  const klaar = (a) => !!log[sid(a.week, a.day)]?.done;
+  const tijdVan = (a) => parseTime(log[sid(a.week, a.day)]?.time) || 0;
+  const hmDone = klaar(HM_SESSION), tienDone = klaar(TIEN_SESSION), brugDone = klaar(BRUG_SESSION);
+  const tienSub60 = tienDone && tijdVan(TIEN_SESSION) > 0 && tijdVan(TIEN_SESSION) <= 3600;
+  const brugSub90 = brugDone && tijdVan(BRUG_SESSION) > 0 && tijdVan(BRUG_SESSION) <= 5400;
+  return { done, total: totalSessions, km, maxDist, maxTime, bestPace, secs, raceDone, hmDone, tienDone, brugDone, tienSub60, brugSub90, streak, fullWeeks };
 }
 
 function currentWeek() {
@@ -413,16 +498,44 @@ function renderHero(stats) {
   $("heroMotto").textContent =
     stats.raceDone ? mottos[5] : pct >= 80 ? mottos[4] : pct >= 50 ? mottos[3] : pct >= 20 ? mottos[2] : pct > 0 ? mottos[1] : mottos[0];
   renderCountdown();
+  renderSubgoal();
+}
+
+function raceTarget() {
+  /* De eerstvolgende race die nog moet komen; is alles geweest, dan de laatste. */
+  const vandaag = new Date().setHours(0, 0, 0, 0);
+  const datumVan = (w) => sessionDate(w.week, w.sessions[w.sessions.length - 1].day).setHours(0, 0, 0, 0);
+  const races = PLAN.filter((w) => w.race || w.finish);
+  const tuneups = PLAN.filter((w) => w.tuneup);
+  /* Gelopen = datum voorbij, óf al afgevinkt (handig op de racedag zelf). */
+  const gelopen = (w) => {
+    const s = w.sessions[w.sessions.length - 1];
+    return datumVan(w) < vandaag || !!log[sid(w.week, s.day)]?.done;
+  };
+  const volgende = races.find((w) => !gelopen(w)) || tuneups.find((w) => !gelopen(w));
+  const rw = volgende || races[races.length - 1] || PLAN[PLAN.length - 1];
+  const rs = rw.sessions[rw.sessions.length - 1];
+  return { rw, rs, date: sessionDate(rw.week, rs.day), allesGelopen: !volgende };
 }
 
 function raceInfo() {
-  const rw = PLAN.find((w) => w.race || w.finish) || PLAN.find((w) => w.tuneup) || PLAN[PLAN.length - 1];
-  const rs = rw.sessions[rw.sessions.length - 1];
-  const off = DAY_OFFSET[rs.day] ?? 6;
-  const date = new Date(schedStartMs() + ((rw.week - 1) * 7 + off) * 864e5);
-  const days = Math.round((date.setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 864e5);
-  return { days, name: rs.title.replace(/^[^\p{L}\d]+/u, "").trim() };
+  const { rs, date, allesGelopen } = raceTarget();
+  const days = Math.round((new Date(date).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 864e5);
+  return { days: allesGelopen ? -1 : days, name: rs.title.replace(/^[^\p{L}\d]+/u, "").trim() };
 }
+
+const NL_DAG = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
+const NL_MAAND = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
+function renderSubgoal() {
+  const el = document.querySelector(".hero-subgoal");
+  if (!el) return;
+  const { rw, rs, date } = raceTarget();
+  const { allesGelopen } = raceTarget();
+  const voorbij = allesGelopen || date.setHours(12, 0, 0, 0) < new Date().setHours(0, 0, 0, 0);
+  const kop = `${voorbij ? "🎉 Gelopen" : "🏁 Doelrace"} · ${NL_DAG[date.getDay()]} ${date.getDate()} ${NL_MAAND[date.getMonth()]}`;
+  el.innerHTML = `<span>${kop}</span><strong>${rw.raceSub || rs.title.replace(/^[^\p{L}\d]+/u, "").trim()}</strong>`;
+}
+
 function renderCountdown() {
   const motto = $("heroMotto");
   if (!motto) return;
@@ -923,7 +1036,14 @@ function openDetail(week, day) {
     log[id] = cur; saveLog();
     if (cur.done) {
       celebrate();
-      toast(!isRaceDetail ? DONE[Math.floor(Math.random() * DONE.length)] : w.finish ? "🌞 Zomer rond! Wat een strijder!" : w.race ? "🏅 Finisher! Wat een prestatie, strijder!" : w.tuneup ? "🏁 Wedstrijd voltooid, sterk gepacet!" : DONE[Math.floor(Math.random() * DONE.length)]);
+      const raceNaam = s.title.replace(/^[^\p{L}\d]+/u, "").trim();
+      toast(!isRaceDetail
+        ? DONE[Math.floor(Math.random() * DONE.length)]
+        : w.race || w.finish
+          ? `🏅 ${raceNaam} volbracht! Wat een prestatie, strijder.`
+          : w.tuneup
+            ? `🏁 ${raceNaam} gelopen, sterk gepacet!`
+            : DONE[Math.floor(Math.random() * DONE.length)]);
     }
     closeDetail();
   });
