@@ -33,7 +33,7 @@ const UNIT = CONFIG.unit === "min" ? "min" : "km";
 const UNIT_LABEL = UNIT;
 const nlNum = (v) => String(v).replace(".", ",");
 const ZONE_SUFFIX = CONFIG.zonePaceSuffix ?? "/km";
-const TOTAL_WEEKS = 15;
+const TOTAL_WEEKS = 27;
 const COACH_INITIAL = (CONFIG.coachName.replace(/^coach\s+/i, "")[0] || "C").toUpperCase();
 
 /* --- Tempozones (afgestemd op Marinke) ----------------------------- */
@@ -464,7 +464,9 @@ function computeStats() {
 
 function currentWeek() {
   const diff = Math.floor((Date.now() - schedStartMs()) / (7 * 864e5));
-  return Math.min(TOTAL_WEEKS, Math.max(1, diff + 1));
+  /* Uit PLAN afleiden, niet uit TOTAL_WEEKS: anders blijft de huidige week
+     hangen op de oude laatste week zodra er weken bijkomen. */
+  return Math.min(PLAN[PLAN.length - 1].week, Math.max(1, diff + 1));
 }
 
 /* ================================================================== *
